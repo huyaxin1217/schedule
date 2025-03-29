@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>日程规划助手</title>
+    <!-- 样式和依赖 -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@3.2.0/dist/fullcalendar.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- 登录页面 -->
+    <div id="login-page" class="auth-container">
+        <div class="auth-form">
+            <h1>欢迎回来</h1>
+            <div class="form-group">
+                <label for="login-username">用户名</label>
+                <input type="text" id="login-username" placeholder="请输入用户名" required />
+                <div class="validation-message" id="login-username-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="login-password">密码</label>
+                <input type="password" id="login-password" placeholder="请输入密码" required />
+                <div class="validation-message" id="login-password-error"></div>
+            </div>
+            <button class="auth-button" onclick="login()">登录</button>
+            <div class="auth-link">
+                还没有账号？ <a href="#" onclick="showRegisterPage()">立即注册</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 注册页面 -->
+    <div id="register-page" class="auth-container" style="display: none;">
+        <div class="auth-form">
+            <h1>创建新账号</h1>
+            <div class="form-group">
+                <label for="register-username">用户名</label>
+                <input type="text" id="register-username" placeholder="请设置用户名" required />
+                <div class="validation-message" id="register-username-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="register-nickname">昵称</label>
+                <input type="text" id="register-nickname" placeholder="请输入昵称" required />
+                <div class="validation-message" id="register-nickname-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="register-password">密码</label>
+                <input type="password" id="register-password" placeholder="请设置密码" required />
+                <div class="validation-message" id="register-password-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="register-confirm-password">确认密码</label>
+                <input type="password" id="register-confirm-password" placeholder="请再次输入密码" required />
+                <div class="validation-message" id="register-confirm-password-error"></div>
+            </div>
+            <button class="auth-button" onclick="register()">注册</button>
+            <div class="auth-link">
+                已有账号？ <a href="#" onclick="showLoginPage()">去登录</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主应用页面 -->
+    <div id="app-page" style="display: none;">
+        <!-- 导航按钮 -->
+        <nav class="custom-nav">
+            <button onclick="showPage('schedule')">📅 日程提醒</button>
+            <button onclick="showPage('water')">💧 喝水记录</button>
+        </nav>
+
+        <!-- 用户信息 -->
+        <div class="user-info">
+            <div class="user-avatar" id="user-avatar"></div>
+            <div class="user-name" id="user-name"></div>
+            <button class="logout-btn" onclick="logout()" title="退出登录">×</button>
+        </div>
+
+        <div class="container">
+            <!-- 日程提醒 -->
+            <div id="schedule" class="content active">
+                <h1>日程提醒</h1>
+                <button class="summary-btn" onclick="showSummary()">📊 一月总结</button>
+                <div id="calendar"></div>
+                <div class="action-buttons">
+                    <button onclick="addNewEvent()">✚ 添加新事件</button>
+                    <button onclick="clearAllEvents()">🗑️ 清除所有事件</button>
+                </div>
+            </div>
+
+            <!-- 喝水记录 -->
+            <div id="water" class="content">
+                <h1>喝水记录</h1>
+                <div class="water-container">
+                    <div class="water-stats">
+                        <div>今日已喝: <span id="current-amount">0</span>ml</div>
+                        <div>目标: <span id="goal-amount">2000</span>ml</div>
+                        <div>完成: <span id="percentage">0</span>%</div>
+                    </div>
+                    <div class="water-cup" id="water-cup">
+                        <div class="water-level" id="water-level"></div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress" id="progress-bar"></div>
+                    </div>
+                    <div class="action-buttons">
+                        <button onclick="addWater(200)">添加200ml</button>
+                        <button onclick="addWater(300)">添加300ml</button>
+                        <button onclick="addWater(500)">添加500ml</button>
+                        <button onclick="resetWater()">重置</button>
+                    </div>
+                    <div class="water-drops" id="water-drops"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 桌宠 -->
+        <div class="pet-container">
+            <div class="pet" id="pet">
+                <div class="pet-head">
+                    <div class="pet-eye left"></div>
+                    <div class="pet-eye right"></div>
+                    <div class="pet-mouth"></div>
+                    <div class="pet-blush left"></div>
+                    <div class="pet-blush right"></div>
+                </div>
+                <div class="pet-body"></div>
+                <div class="pet-arm left"></div>
+                <div class="pet-arm right"></div>
+                <div class="pet-speech-bubble" id="pet-speech"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 月度总结弹窗 -->
+    <div id="summary-modal">
+        <div id="summary-content">
+            <button class="close-btn" onclick="hideSummary()">✖</button>
+            <h2>本月日程统计</h2>
+            <canvas id="summaryChart"></canvas>
+        </div>
+    </div>
+
+    <!-- 事件表单弹窗 -->
+    <div id="event-modal">
+        <div id="event-form">
+            <h2>添加/编辑事件</h2>
+            <input type="hidden" id="event-id" />
+            <label for="event-title">事件标题</label>
+            <input type="text" id="event-title" placeholder="输入事件标题..." required />
+
+            <label for="event-date">日期</label>
+            <input type="date" id="event-date" required />
+
+            <label for="event-start-time">开始时间</label>
+            <input type="time" id="event-start-time" required />
+
+            <label for="event-end-time">结束时间</label>
+            <input type="time" id="event-end-time" required />
+
+            <label for="event-color">颜色</label>
+            <select id="event-color">
+                <option value="#a29bfe">静蓝</option>
+                <option value="#ff7675">柔红</option>
+                <option value="#55efc4">茶绿</option>
+                <option value="#fab1a0">蜜橘</option>
+                <option value="#dfe6e9">浅紫</option>
+            </select>
+
+            <label for="event-description">描述 (可选)</label>
+            <textarea id="event-description" rows="3" placeholder="添加事件详情..."></textarea>
+
+            <div class="form-buttons">
+                <button class="cancel-btn" onclick="hideEventForm()">取消</button>
+                <button class="save-btn" onclick="saveEvent()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 脚本引入 -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment-timezone@0.5.14/builds/moment-timezone-with-data.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lunar-javascript/1.7.0/lunar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@3.2.0/dist/fullcalendar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@3.2.0/dist/locale/zh-cn.js"></script>
+    <script src="auth.js"></script>
+    <script src="schedule.js"></script>
+    <script src="water.js"></script>
+    <script src="pet.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

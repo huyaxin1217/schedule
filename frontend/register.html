@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>注册页面</title>
+    <link rel="stylesheet" href="style.css" />
+    <script>
+        // 注册后跳转回 index.html
+        function register(e) {
+            e.preventDefault();
+            // 你的注册逻辑...
+            window.location.href = 'index.html'; // 注册完成跳转登录页
+        }
+    </script>
+
+</head>
+
+<body>
+    <div class="auth-container">
+        <h2>注册</h2>
+        <form onsubmit="return register(event)">
+            <input type="text" id="register-username" placeholder="用户名" required />
+            <input type="password" id="register-password" placeholder="密码" required />
+            <input type="password" id="register-password2" placeholder="再次输入密码" required />
+            <button type="submit">注册</button>
+        </form>
+        <p>已有账号？ <a href="index.html">去登录</a></p>
+    </div>
+
+    <script>
+        function register(e) {
+            e.preventDefault();
+            const user = document.getElementById('register-username').value.trim();
+            const pass1 = document.getElementById('register-password').value.trim();
+            const pass2 = document.getElementById('register-password2').value.trim();
+
+            if (!user || !pass1 || !pass2) {
+                alert('请填写完整信息！');
+                return false;
+            }
+
+            if (pass1 !== pass2) {
+                alert('两次密码输入不一致！');
+                return false;
+            }
+
+            // 简单存一下用户信息，本地存储或者AJAX请求都行，这里演示一下本地存
+            localStorage.setItem('demoUser', JSON.stringify({ username: user, password: pass1 }));
+            alert('注册成功，赶紧去登录吧！');
+            window.location.href = 'index.html';
+            return false;
+        }
+    </script>
+</body>
+
+</html>

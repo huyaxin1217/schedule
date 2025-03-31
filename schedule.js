@@ -116,7 +116,39 @@ function initializeCalendar() {
             }
         },
     });
+    startEventReminder();
 }
+//提醒事件
+function startEventReminder() {
+    const remindedEvents = new Set();
+
+    setInterval(() => {
+        const now = new Date();
+
+        const nowKey = now.getFullYear() + '-' +
+            (now.getMonth() + 1).toString().padStart(2, '0') + '-' +
+            now.getDate().toString().padStart(2, '0') + ' ' +
+            now.getHours().toString().padStart(2, '0') + ':' +
+            now.getMinutes().toString().padStart(2, '0');
+
+        storedEvents.forEach(event => {
+            const eventDate = new Date(event.start);
+            const eventKey = eventDate.getFullYear() + '-' +
+                (eventDate.getMonth() + 1).toString().padStart(2, '0') + '-' +
+                eventDate.getDate().toString().padStart(2, '0') + ' ' +
+                eventDate.getHours().toString().padStart(2, '0') + ':' +
+                eventDate.getMinutes().toString().padStart(2, '0');
+
+            const uniqueId = `${event.userId}-${eventKey}`;
+
+            if (nowKey === eventKey && !remindedEvents.has(uniqueId)) {
+                petSpeak(`喂！现在是${nowKey.slice(11)}！你该“${event.title}”啦！别拖延，快动起来！`);
+                remindedEvents.add(uniqueId);
+            }
+        });
+    }, 1000);
+}
+
 
 // 添加新事件
 function addNewEvent() {

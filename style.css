@@ -1012,4 +1012,82 @@ h1 {
         width: 150px;
         font-size: 12px;
     }
+
+    #pet.shake {
+        animation: shake 0.4s;
+    }
+
+    @keyframes shake {
+        0% {
+            transform: translateX(0);
+        }
+
+        25% {
+            transform: translateX(-5px);
+        }
+
+        50% {
+            transform: translateX(5px);
+        }
+
+        75% {
+            transform: translateX(-5px);
+        }
+
+        100% {
+            transform: translateX(0);
+        }
+    }
+
+    .popup-reminder {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 9999;
+        background-color: #fffbcc;
+        color: #333;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        font-size: 16px;
+        animation: fadeInUp 0.5s ease;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .popup-reminder {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 9999;
+        background-color: #fffbcc;
+        color: #333;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        font-size: 16px;
+        animation: fadeInUp 0.5s ease;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
 }

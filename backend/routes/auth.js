@@ -6,11 +6,20 @@ const db = require('../db');
 router.post('/register', (req, res) => {
     const { username, password, nickname } = req.body;
     db.query(
-        'INSERT INTO users (username, password, nickname) VALUES (?, ?, ?)',
-        [username, password, nickname],
-        (err) => {
-            if (err) return res.status(500).send('注册失败');
-            res.send('注册成功');
+        'SELECT * FROM users WHERE username = ?',
+        [username],
+        (err, results) => {
+            if (err) return res.status(500).send('服务器错误');
+            if (results.length > 0) return res.status(400).send('用户名已存在');
+
+            db.query(
+                'INSERT INTO users (username, password, nickname) VALUES (?, ?, ?)',
+                [username, password, nickname],
+                (err2) => {
+                    if (err2) return res.status(500).send('注册失败');
+                    res.send('注册成功');
+                }
+            );
         }
     );
 });

@@ -11,6 +11,26 @@ let waterAmount = 0;
 const waterGoal = 2000;
 let waterReminder = null;
 
+// 请求通知权限
+if (Notification && Notification.permission !== "granted") {
+    Notification.requestPermission();
+}
+
+// 通知提醒函数 + 桌宠抖动
+function notifyUser(title) {
+    if (Notification.permission === "granted") {
+        new Notification("日程提醒", {
+            body: `喂！现在是 ${title}！别拖了，快去做事！`,
+        });
+    }
+
+    const pet = document.getElementById("pet");
+    if (pet) {
+        pet.classList.add("shake");
+        setTimeout(() => pet.classList.remove("shake"), 1000);
+    }
+}
+
 // 桌宠相关
 let petSpeechTimeoutId = null;
 const petMessages = [
@@ -50,3 +70,43 @@ $(document).ready(function () {
         showLoginPage();
     }
 });
+function checkEventsForReminder() {
+    const now = new Date();
+    const currentUser = getCurrentUser();
+    if (!currentUser) return;
+
+    storedEvents.forEach(event => {
+        if (event.userId !== currentUser.id) return;
+
+        const eDate = new Date(event.start);
+        const diff = Math.abs(now.getTime() - eDate.getTime());
+
+        if (diff <= 30000) { // 在事件时间前后30秒内提醒
+            notifyUser(event.title);
+            showPopup(event.title);
+        }
+    });
+}
+
+setInterval(checkEventsForReminder, 1000); // 每秒检查一次
+function showPopup(title) {
+    const popup = document.createElement("div");
+    popup.innerText = `提醒：你该 "${title}" 啦！`;
+    popup.style.position = "fixed";
+    popup.style.top = "20px";
+    popup.style.right = "20px";
+    popup.style.background = "#ff4d4f";
+    popup.style.color = "#fff";
+    popup.style.padding = "15px 20px";
+    popup.style.borderRadius = "10px";
+    popup.style.boxShadow = "0 0 10px rgba(0,0,0,0.3)";
+    popup.style.zIndex = 9999;
+    popup.style.fontSize = "16px";
+
+    document.body.appendChild(popup);
+
+    setTimeout(() => {
+        popup.remove();
+    }, 8000);
+}
+
